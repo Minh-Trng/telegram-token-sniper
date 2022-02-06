@@ -1,3 +1,11 @@
 ---
 API_ID: 12345
 API_HASH: 12345abcd
+
+# amount of past days to sync. Sync: check messages for tokens that were already called and store them in db,
+# to prevent buying them when the token gets called another time
+SYNC_LIMIT_DAYS: 10
+
+# fill this to get notified about some events on the sniper in a telegram message. Leave null if you dont need this
+TG_BOT_TOKEN: null
+TG_CHAT_ID: null

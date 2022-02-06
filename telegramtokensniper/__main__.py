@@ -6,6 +6,8 @@ import asyncio
 import cryptg
 from datetime import datetime, timedelta, timezone
 
+from telegramtokensniper import parsing, log_utils
+
 client = TelegramClient('session_name', config.general_params['API_ID'], config.general_params['API_HASH'])
 
 async def main():
@@ -18,9 +20,12 @@ async def sync_already_called_tokens():
         print(dialog.name, 'has ID', dialog.id)
 
         async for message in client.iter_messages(dialog.id):
-            msg_timedelta = current_time -message.date
-            if msg_timedelta.days > 30:
-                'TODO: store in db'
+            msg_timedelta = current_time - message.date
+            if msg_timedelta.days < config.general_params["SYNC_LIMIT_DAYS"]:
+                parse_result = parsing.parse_message(message.text)
+
+                if parse_result is not None:
+                    raise NotImplementedError
 
 if __name__ == "__main__":
     with client:

@@ -1,35 +1,85 @@
 import sqlite3
+from telegramtokensniper import log_utils
+
 
 def _create_tables():
-    con = sqlite3.connect('storage.db')
-    cur = con.cursor()
+    conn = sqlite3.connect('storage.db')
+    cur = conn.cursor()
 
+    #AUTOINCREMENT not required: https://www.sqlite.org/autoinc.html
     cur.execute('''CREATE TABLE IF NOT EXISTS tokens (
-    token_id integer primary key, 
-    address text, 
-    chain text, 
-    chat_id_first_seen integer, 
-    message_id_first_seen integer,
-    message_timestamp integer)''')
+    token_id INTEGER PRIMARY KEY , 
+    address TEXT UNIQUE, 
+    chain TEXT, 
+    chat_id_first_seen INTEGER, 
+    message_id_first_seen INTEGER,
+    message_timestamp INTEGER)''')
 
     cur.execute('''CREATE TABLE IF NOT EXISTS buys (
-    buy_id integer primary key,
-    token_id integer,
-    tx_hash text)''')
+    buy_id INTEGER PRIMARY KEY ,
+    token_id INTEGER,
+    tx_hash TEXT,
+    FOREIGN KEY(token_id) REFERENCES tokens(token_id))''')
 
-    con.commit()
-    con.close()
+    conn.commit()
+    conn.close()
 
 
 _create_tables()
 
 def insert_token(address, chain, chat_id, message):
-    con = sqlite3.connect('storage.db')
-    cur = con.cursor()
-    raise NotImplementedError
+    try:
+        conn = sqlite3.connect('storage.db')
+        cur = conn.cursor()
+
+        cur.execute("INSERT INTO tokens VALUES(NULL, ?, ?, ?, ?, ?)",
+                    (address, chain, chat_id, message.id, int(message.date.timestamp())))
+
+        inserted_id = cur.lastrowid
+
+        conn.commit()
+        conn.close()
+
+        return inserted_id
+    except Exception as e:
+        log_utils.logging.warning(e)
+
+# import datetime
+# class Message:
+#     def __init__(self, msg_id, date):
+#         self.id = msg_id
+#         self.date = date
+#
+# print(insert_token("a", "a", 1, Message(1, datetime.datetime.utcnow())))
+# print(insert_token("b", "a", 1, Message(1, datetime.datetime.utcnow())))
+# print(insert_token("d", "a", 1, Message(1, datetime.datetime.utcnow())))
 
 def token_already_seen(address):
-    raise NotImplementedError
+    conn = sqlite3.connect('storage.db')
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM tokens WHERE address = ?", address)
+
+    row = cur.fetchone()
+
+    cur.close()
+
+    return row is not None
 
 def insert_buy(token_id, tx_hash):
-    raise NotImplementedError
+    try:
+        conn = sqlite3.connect('storage.db')
+        conn.execute("PRAGMA foreign_keys = 1") # enforces FK-constraint for this connection
+        cur = conn.cursor()
+
+        cur.execute("INSERT INTO buys VALUES(NULL, ?, ?)",
+                    (token_id, tx_hash))
+
+        inserted_id = cur.lastrowid
+
+        conn.commit()
+        conn.close()
+
+        return inserted_id
+    except Exception as e:
+        log_utils.logging.warning(e)
