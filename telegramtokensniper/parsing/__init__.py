@@ -19,18 +19,22 @@ class ParseResult:
         self.chains = chains
 
 
-def parse_message(message: types.Message) -> ParseResult:
+def parse_message(message_text) -> ParseResult:
     """
-    :param message:
+    :param message_text:
     :return: ParseResult -> address of a token or Uniswap-like pair and the chain that its on. None if no
     address contained in message
     """
 
-    found_addresses = compiled_re.findall(message.text)
+    if message_text is None:
+        return ParseResult([], [])
+
+    found_addresses = compiled_re.findall(message_text)
     found_chains = []
 
     for chain_name, search_terms in CHAIN_SEARCH_TERMS.items():
-        if search_terms in message.text:
+        message_contains_any_searchterm = any(map(lambda x: x in message_text, search_terms))
+        if message_contains_any_searchterm:
             found_chains.append(chain_name)
 
-    return ParseResult(found_addresses,found_chains)
+    return ParseResult(found_addresses, found_chains)

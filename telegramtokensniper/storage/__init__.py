@@ -54,11 +54,11 @@ def insert_token(address, chain, chat_id, message):
 # print(insert_token("b", "a", 1, Message(1, datetime.datetime.utcnow())))
 # print(insert_token("d", "a", 1, Message(1, datetime.datetime.utcnow())))
 
-def token_already_seen(address):
+def address_already_seen(address):
     conn = sqlite3.connect('storage.db')
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM tokens WHERE address = ?", address)
+    cur.execute("SELECT * FROM tokens WHERE address = ?", (address,))
 
     row = cur.fetchone()
 
