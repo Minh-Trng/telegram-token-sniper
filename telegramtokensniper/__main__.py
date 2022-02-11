@@ -17,10 +17,6 @@ client = TelegramClient('session_name', config.general_params['API_ID'], config.
 
 sync_completed = False
 
-async def main():
-    await sync_already_called_tokens()
-
-
 async def sync_already_called_tokens():
     current_time = datetime.now(timezone.utc)
 
@@ -68,13 +64,18 @@ def _process_message(message, dialog_id, buy_new_tokens=False):
 
 
 if __name__ == "__main__":
-    with client:
-        client.loop.run_until_complete(main())
+    try:
+        with client:
+            client.loop.run_until_complete(sync_already_called_tokens())
+    except Exception as e:
+        notifications.send_telegram_message("TTS: sync failed")
+        log_utils.logging.error(f'Exception during sync: {e}')
 
     while True:
         try:
             client.start()
             client.run_until_disconnected()
-        except:
-            notifications.send_telegram_message("TTS: client disconnected, attempt restart")
+        except Exception as e:
+            notifications.send_telegram_message("TTS: client disconnected or exception occured, attempt restart")
+            log_utils.logging.error(f'Exception caught in main-loop: {e}')
             time.sleep(60)
