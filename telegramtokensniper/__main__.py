@@ -70,6 +70,7 @@ if __name__ == "__main__":
     except Exception as e:
         notifications.send_telegram_message("TTS: sync failed")
         log_utils.logging.error(f'Exception during sync: {e}')
+        exit()
 
     while True:
         try:
