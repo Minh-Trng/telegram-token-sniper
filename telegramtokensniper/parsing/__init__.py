@@ -1,5 +1,6 @@
 import re
 from telethon.tl import types
+from typing import List
 
 compiled_re = re.compile('0x[a-fA-F0-9]{40}')
 
@@ -14,7 +15,7 @@ CHAIN_SEARCH_TERMS = {
 #later: 'cronos': dexscreener.com/cronos/
 
 class ParseResult:
-    def __init__(self, addresses: list[str], chains: list[str] ):
+    def __init__(self, addresses: List[str], chains: List[str]):
         self.addresses = addresses
         self.chains = chains
 
