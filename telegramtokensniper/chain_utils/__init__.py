@@ -1,3 +1,5 @@
+import os
+
 import dexbuytools.config
 import dexbuytools.helpers
 from web3 import Web3
@@ -79,8 +81,10 @@ def buy(address_chain_pairs):
         notifications.send_telegram_message(f"TTS: bought '''{address}''' on {chain}")
 
 
+file_dir = os.path.dirname(__file__)
+
 def get_dbt_config(chain):
-    buy_params_path = f'./dbt_config/{chain}_buy_params.yml'
-    wallet_data_path = f'./dbt_config/{chain}_wallet_data.yml'
-    general_params_path = f'./dbt_config/general_params.yml'
+    buy_params_path = f'{file_dir}/../dbt_config/{chain}_buy_params.yml'
+    wallet_data_path = f'{file_dir}/../dbt_config/{chain}_wallet_data.yml'
+    general_params_path = f'{file_dir}/../dbt_config/general_params.yml'
     return dexbuytools.config.get_config(buy_params_path, wallet_data_path, general_params_path)
