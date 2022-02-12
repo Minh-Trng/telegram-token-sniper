@@ -1,17 +1,9 @@
-import asyncio
-import logging
 import time
 
-import dexbuytools
 from telethon import TelegramClient, events
-import config
-import asyncio
-import cryptg
 from datetime import datetime, timedelta, timezone
 
-from telegramtokensniper import parsing, log_utils, storage, chain_utils, notifications
-
-import chain_utils
+from telegramtokensniper import parsing, log_utils, storage, chain_utils, notifications, config, chain_utils
 
 client = TelegramClient('session_name', config.general_params['API_ID'], config.general_params['API_HASH'])
 
