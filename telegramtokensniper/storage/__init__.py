@@ -29,6 +29,8 @@ _create_tables()
 
 def insert_token(address, chain, chat_id, message):
     try:
+        address = address.lower()
+
         conn = sqlite3.connect('storage.db')
         cur = conn.cursor()
 
@@ -55,6 +57,8 @@ def insert_token(address, chain, chat_id, message):
 # print(insert_token("d", "a", 1, Message(1, datetime.datetime.utcnow())))
 
 def address_already_seen(address):
+    address = address.lower()
+
     conn = sqlite3.connect('storage.db')
     cur = conn.cursor()
 
