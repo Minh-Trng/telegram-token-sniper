@@ -69,10 +69,6 @@ def buy(address_chain_pairs):
 
     for address, chain in address_chain_pairs:
 
-        if chain == 'eth':
-            'TODO: include once fully supported in Dexbuytools'
-            continue
-
         dbt_config = get_dbt_config(chain)
 
         helper = dexbuytools.helpers.get_helper(chain, dbt_config)
