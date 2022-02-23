@@ -58,7 +58,7 @@ def determine_tokens(addresses, chains):
                 except Exception as e:
                     continue
 
-    return results_found
+    return list(dict.fromkeys(results_found)) #remove duplicates
 
 def buy(address_chain_pairs):
     """

@@ -7,8 +7,8 @@ def _create_tables():
     cur = conn.cursor()
 
     #AUTOINCREMENT not required: https://www.sqlite.org/autoinc.html
-    cur.execute('''CREATE TABLE IF NOT EXISTS tokens (
-    token_id INTEGER PRIMARY KEY , 
+    cur.execute('''CREATE TABLE IF NOT EXISTS addresses (
+    address_id INTEGER PRIMARY KEY , 
     address TEXT UNIQUE, 
     chain TEXT, 
     chat_id_first_seen INTEGER, 
@@ -17,9 +17,9 @@ def _create_tables():
 
     cur.execute('''CREATE TABLE IF NOT EXISTS buys (
     buy_id INTEGER PRIMARY KEY ,
-    token_id INTEGER,
+    address_id INTEGER,
     tx_hash TEXT,
-    FOREIGN KEY(token_id) REFERENCES tokens(token_id))''')
+    FOREIGN KEY(address_id) REFERENCES addresses(address_id))''')
 
     conn.commit()
     conn.close()
@@ -27,14 +27,14 @@ def _create_tables():
 
 _create_tables()
 
-def insert_token(address, chain, chat_id, message):
+def insert_address(address, chain, chat_id, message):
     try:
         address = address.lower()
 
         conn = sqlite3.connect('storage.db')
         cur = conn.cursor()
 
-        cur.execute("INSERT INTO tokens VALUES(NULL, ?, ?, ?, ?, ?)",
+        cur.execute("INSERT INTO addresses VALUES(NULL, ?, ?, ?, ?, ?)",
                     (address, chain, chat_id, message.id, int(message.date.timestamp())))
 
         inserted_id = cur.lastrowid
@@ -52,9 +52,9 @@ def insert_token(address, chain, chat_id, message):
 #         self.id = msg_id
 #         self.date = date
 #
-# print(insert_token("a", "a", 1, Message(1, datetime.datetime.utcnow())))
-# print(insert_token("b", "a", 1, Message(1, datetime.datetime.utcnow())))
-# print(insert_token("d", "a", 1, Message(1, datetime.datetime.utcnow())))
+# print(insert_address("a", "a", 1, Message(1, datetime.datetime.utcnow())))
+# print(insert_address("b", "a", 1, Message(1, datetime.datetime.utcnow())))
+# print(insert_address("d", "a", 1, Message(1, datetime.datetime.utcnow())))
 
 def address_already_seen(address):
     address = address.lower()
@@ -62,7 +62,7 @@ def address_already_seen(address):
     conn = sqlite3.connect('storage.db')
     cur = conn.cursor()
 
-    cur.execute("SELECT * FROM tokens WHERE address = ?", (address,))
+    cur.execute("SELECT * FROM addresses WHERE address = ?", (address,))
 
     row = cur.fetchone()
 
@@ -70,14 +70,14 @@ def address_already_seen(address):
 
     return row is not None
 
-def insert_buy(token_id, tx_hash):
+def insert_buy(address_id, tx_hash):
     try:
         conn = sqlite3.connect('storage.db')
         conn.execute("PRAGMA foreign_keys = 1") # enforces FK-constraint for this connection
         cur = conn.cursor()
 
         cur.execute("INSERT INTO buys VALUES(NULL, ?, ?)",
-                    (token_id, tx_hash))
+                    (address_id, tx_hash))
 
         inserted_id = cur.lastrowid
 

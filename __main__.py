@@ -46,13 +46,24 @@ def _process_message(message, dialog_id, buy_new_tokens=False):
         if len(chains) == 0:
             log_utils.logging.info(f"address(es) found without chain: {unseen_addresses}")
             for address in unseen_addresses:
-                storage.insert_token(address, '', dialog_id, message)
+                storage.insert_address(address, '', dialog_id, message)
         else:
-            address_chain_pairs = chain_utils.determine_tokens(unseen_addresses, chains)
-            for address, chain in address_chain_pairs:
-                storage.insert_token(address, chain, dialog_id, message)
+            tokenaddress_chain_pairs = chain_utils.determine_tokens(unseen_addresses, chains)
+
+            tokenaddresses = [x[0] for x in tokenaddress_chain_pairs]
+
+            for unseen_address in unseen_addresses:
+                if unseen_address not in tokenaddresses:
+                    #store non-token-addresses like pair-contracts to filter them out in future messages
+                    storage.insert_address(unseen_address, '', dialog_id, message)
+
+            unseen_tokenaddress_chain_pairs = [x for x in tokenaddress_chain_pairs if not storage.address_already_seen(x[0])]
+
+            for address, chain in unseen_tokenaddress_chain_pairs:
+                storage.insert_address(address, chain, dialog_id, message)
+
             if buy_new_tokens:
-                chain_utils.buy(address_chain_pairs)
+                chain_utils.buy(unseen_tokenaddress_chain_pairs)
 
 
 if __name__ == "__main__":
