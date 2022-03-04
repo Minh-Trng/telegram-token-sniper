@@ -5,11 +5,11 @@ from typing import List
 compiled_re = re.compile('0x[a-fA-F0-9]{40}')
 
 CHAIN_SEARCH_TERMS = {
-    'eth': ['dextools.io/app/ether/', 'dexscreener.com/ethereum'],
+    'eth': ['dexscreener.com/ethereum', 'dextools.io/app/ether/'],
     'bsc': ['poocoin.app/tokens/', 'dexscreener.com/bsc', 'dextools.io/app/bsc'],
-    'avax': ['dexscreener.com/avalanche'],
-    'ftm': ['dexscreener.com/fantom'],
-    'poly': ['dexscreener.com/polygon']
+    'avax': ['dexscreener.com/avalanche', 'dextools.io/app/avalanche'],
+    'ftm': ['dexscreener.com/fantom', 'dextools.io/app/fantom'],
+    'poly': ['dexscreener.com/polygon', 'dextools.io/app/polygon']
 }
 
 #later: 'cronos': dexscreener.com/cronos/
